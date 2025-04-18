@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8" />
+  <title>Divine One RPG</title>
+</head>
+<body>
+  <h1>Divine One vs Training Dummy</h1>
+
+  <div id="player" class="character-container">
+  <h2>Player</h2>
+  <p>HP: <span id="playerHP">100</span></p>
+<p>Energy: <span id="playerEnergy">100</span></p>
+  <div class="bar-wrapper">
+    <div class="bar-label">HP</div>
+    <div class="bar-container">
+      <div id="playerHealthBar" class="bar health-bar"></div>
+    </div>
+  </div>
+  <div class="bar-wrapper">
+    <div class="bar-label">Energy</div>
+    <div class="bar-container">
+      <div id="playerEnergyBar" class="bar energy-bar"></div>
+    </div>
+  </div>
+</div>
+
+<div id="dummy" class="character-container">
+  <h2>Dummy</h2>
+  <p>HP: <span id="dummyHP">100</span></p>
+<p>Energy: <span id="dummyEnergy">0</span></p>
+  <div class="bar-wrapper">
+    <div class="bar-label">HP</div>
+    <div class="bar-container">
+      <div id="dummyHealthBar" class="bar health-bar"></div>
+    </div>
+  </div>
+  <div class="bar-wrapper">
+    <div class="bar-label">Energy</div>
+    <div class="bar-container">
+      <div id="dummyEnergyBar" class="bar energy-bar"></div>
+    </div>
+  </div>
+</div>
+
+  <div id="turnCounter">Turn: 1</div>
+
+  <button onclick="useUnseenHand()">Unseen Hand</button>
+  <button onclick="useDivineProtection()">Divine Protection</button>
+  <button onclick="useLordOfTheRealm()">Lord of the Realm</button>
+  <button onclick="generateEnergy()">Generate Energy</button> <!-- New button -->
+
+  <div id="log" class="battle-log"></div>
+
+  <div id="postBattle" style="display: none;">
+    <button id="startNewBattleButton" onclick="startNewBattle()">Battle Again</button>
+    <button id="inventoryButton" onclick="openInventory()">Check Inventory</button>
+  </div>
+
+<div id="inventoryScreen" style="display: none;">
+  <h2>Inventory</h2>
+  <div id="characterPortrait">[Character Portrait Placeholder]</div>
+
+  <div id="equipmentSlots">
+  <h3>Equipment</h3>
+  <div class="equipment-slot slot" id="slot-head" data-slot="head">Head: None</div>
+  <div class="equipment-slot slot" id="slot-chest" data-slot="chest">Chest: None</div>
+  <div class="equipment-slot slot" id="slot-arms" data-slot="arms">Arms: None</div>
+  <div class="equipment-slot slot" id="slot-legs" data-slot="legs">Legs: None</div>
+  <div class="equipment-slot slot" id="slot-weapon" data-slot="weapon">Weapon: None</div>
+</div>
+
+  <div id="inventorySlots">
+    <h3>Items</h3>
+    <div class="inventory-grid">
+      <!-- 10 inventory slots -->
+      <div class="inventory-slot" id="inv-slot-0"></div>
+      <div class="inventory-slot" id="inv-slot-1"></div>
+      <div class="inventory-slot" id="inv-slot-2"></div>
+      <div class="inventory-slot" id="inv-slot-3"></div>
+      <div class="inventory-slot" id="inv-slot-4"></div>
+      <div class="inventory-slot" id="inv-slot-5"></div>
+      <div class="inventory-slot" id="inv-slot-6"></div>
+      <div class="inventory-slot" id="inv-slot-7"></div>
+      <div class="inventory-slot" id="inv-slot-8"></div>
+      <div class="inventory-slot" id="inv-slot-9"></div>
+    </div>
+  </div>
+
+  <div id="mainMenu" style="display: block;">
+    <!-- Main Menu Content Here -->
+    <button onclick="startNewBattle()">Start New Battle</button>
+    <button onclick="openInventory()">Check Inventory</button>
+  </div>
+
+  <button onclick="closeInventory()">Back to Main Menu</button>
+</div>
+
+  <script src="game.js"></script>
+</body>
+</html>

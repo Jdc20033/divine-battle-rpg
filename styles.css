@@ -1,0 +1,218 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #e0f0ff;
+}
+
+#gameContainer {
+  margin: 20px auto;
+  padding: 20px;
+  width: 80%;
+  max-width: 600px;
+  border: 2px solid #444;
+  border-radius: 10px;
+  background-color: white;
+}
+
+.character-container {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 15px auto;
+  width: 300px;
+  background-color: #f9f9f9;
+}
+
+.bar-wrapper {
+  margin-bottom: 10px;
+}
+
+.bar-label {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.bar-container {
+  background-color: #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  height: 20px;
+  width: 100%;
+}
+
+/* Health Bar with Texture */
+.bar {
+  border-radius: 5px;
+  background: linear-gradient(to right, #ff0000, #ff9900);
+  height: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.health-bar {
+  background-color: #e74c3c; /* red */
+  width: 100%;
+}
+
+.energy-bar {
+  background-color: #3498db; /* blue */
+  width: 100%;
+}
+
+#log,
+#battleLog {
+  margin-top: 20px;
+  background-color: #f4f4f4;
+  padding: 10px;
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+  text-align: left;
+}
+
+/* Action Buttons */
+button {
+  background-color: #5a5a5a;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #ff6600;
+  transform: scale(1.1);
+}
+
+#inventoryScreen {
+    padding: 20px;
+    background-color: #fefefe;
+    border: 2px solid #ccc;
+    margin-top: 20px;
+    text-align: left;
+}
+
+#characterPortrait {
+    width: 100px;
+    height: 100px;
+    background-color: #ddd;
+    border: 1px solid #aaa;
+    margin-bottom: 20px;
+    text-align: center;
+    line-height: 100px;
+}
+
+#equipmentSlots .equipment-slot {
+    margin: 5px 0;
+    padding: 5px;
+    border: 1px solid #aaa;
+    background-color: #f0f0f0;
+}
+
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Item Icons */
+.inventory-slot {
+  width: 60px;
+  height: 60px;
+  border-radius: 5px;
+  border: 1px solid #fff;
+  background-color: rgba(0, 0, 0, 0.6);
+  margin: 5px;
+}
+
+/*.inventory-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+}*/
+
+.inventory-slot.empty {
+  background-color: #f0f0f0;
+  color: #888;
+}
+
+#log {
+  height: 220px;
+  overflow-y: auto;
+  background-color: #111;
+  color: #eee;
+  padding: 10px;
+  border: 2px solid #444;
+  font-family: monospace;
+  font-size: 14px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 10px #000;
+}
+
+.log-entry {
+  margin: 6px 0;
+  padding: 4px 8px;
+  background-color: #1e1e1e;
+  border-left: 4px solid #555;
+  border-radius: 4px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Color themes */
+.log-entry.attack { border-left-color: #c62828; color: #ef9a9a; }
+.log-entry.heal   { border-left-color: #2e7d32; color: #a5d6a7; }
+.log-entry.loot   { border-left-color: #f9a825; color: #fff59d; }
+.log-entry.info   { border-left-color: #0277bd; color: #81d4fa; }
+.log-entry.error  { border-left-color: #e53935; color: #ef5350; }
+
+.slot {
+  border: 2px dashed #aaa;
+  padding: 8px;
+  margin: 5px;
+  min-width: 60px;
+  min-height: 30px;
+  background-color: #f2f2f2;
+  text-align: center;
+  cursor: grab;
+}
+
+.slot.drag-over {
+  background-color: #cceeff;
+  border-color: #00aaff;
+}
+
+/* Highlight the equipment slot when dragging an item over it */
+.drag-over {
+  border: 2px dashed #4CAF50;
+  background-color: rgba(0, 128, 0, 0.1);
+  outline: 2px solid #32CD32; /* Green outline for the drag-over effect */
+  outline-offset: 2px; /* Optional: Adds some space between the element and the outline */
+}
+
+/* Optional: Add hover effect on equipment slots */
+.equipment-slot:hover {
+  border: 2px solid #32CD32; /* Green border on hover */
+  cursor: pointer;
+}
+
+.equipment-slot.drag-over {
+  border: 2px solid #ffcc00;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Equipment Slot Styling */
+.equipment-slot {
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 5px;
+  margin: 10px;
+  font-size: 1.2em;
+  color: #fff;
+}
