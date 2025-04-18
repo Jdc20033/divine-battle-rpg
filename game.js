@@ -1,10 +1,16 @@
 let player = {
    health: 100,
+   maxHealth: 100,
    energy: 100,
+   maxEnergy: 100,
    level:  1,
    xp: 0,
    isGeneratingEnergy: false,
-   divineBarrierTurns: 0
+   divineProtectionCooldown: 0,
+   lordOfTheRealmCooldown: 0,
+   divineBarrierTurns: 0,
+   realmTurns: 0,
+   divineOneBarrier: 0
  };
 
  let dummy = {
@@ -26,43 +32,81 @@ let player = {
  let turnNumber = 1;
  let gameEnded = false;
 
+ document.addEventListener("DOMContentLoaded", () => {
+   // Force hide post-battle UI and its buttons on first page load
+   document.getElementById("postBattle").style.display = "none";
+   document.getElementById("startNewBattleButton").style.display = "none";
+   document.getElementById("inventoryButton").style.display = "none";
+ });
+
+ // Function to update stats
  function updateStats() {
-   // Text updates
    document.getElementById("playerHP").textContent = player.health;
    document.getElementById("playerEnergy").textContent = player.energy;
    document.getElementById("dummyHP").textContent = dummy.health;
    document.getElementById("dummyEnergy").textContent = dummy.energy;
 
-   // Bar updates (max health/energy is 100, adjust if needed)
-   document.getElementById("playerHealthBar").style.width = (player.health / 100) * 100 + "%";
-   document.getElementById("playerEnergyBar").style.width = (player.energy / 100) * 100 + "%";
+   // Update level and XP
+   document.getElementById("playerLevel").textContent = player.level;
+   document.getElementById("playerXP").textContent = player.xp;
+   document.getElementById("xpNeeded").textContent = player.level * 100;
+
+   const xpPercent = (player.xp / (player.level * 100)) * 100;
+   document.getElementById("playerXPBar").style.width = `${Math.min(xpPercent, 100)}%`;
+
+   // Health & energy bars
+   document.getElementById("playerHealthBar").style.width = (player.health / player.maxHealth) * 100 + "%";
+   document.getElementById("playerEnergyBar").style.width = (player.energy / player.maxEnergy) * 100 + "%";
    document.getElementById("dummyHealthBar").style.width = (dummy.health / 100) * 100 + "%";
    document.getElementById("dummyEnergyBar").style.width = (dummy.energy / 100) * 100 + "%";
  }
 
- // Function to update the health and energy bars for both player and dummy
+ // Function to update the bars
  function updateBars() {
-   // Update Player Health Bar
    const playerHealthBar = document.getElementById("playerHealthBar");
-   const playerHealthPercentage = player.health / 100;
-   playerHealthBar.style.width = `${playerHealthPercentage * 100}%`;
+   const playerHealthPercentage = player.health / player.maxHealth;
+   playerHealthBar.style.width = `${Math.min(playerHealthPercentage * 100, 100)}%`;
 
-   // Update Player Energy Bar
    const playerEnergyBar = document.getElementById("playerEnergyBar");
-   const playerEnergyPercentage = player.energy / 100;
-   playerEnergyBar.style.width = `${playerEnergyPercentage * 100}%`;
+   const playerEnergyPercentage = player.energy / player.maxEnergy;
+   playerEnergyBar.style.width = `${Math.min(playerEnergyPercentage * 100, 100)}%`;
 
-   // Update Dummy Health Bar
    const dummyHealthBar = document.getElementById("dummyHealthBar");
    const dummyHealthPercentage = dummy.health / 100;
    dummyHealthBar.style.width = `${dummyHealthPercentage * 100}%`;
 
-   // Update Dummy Energy Bar
    const dummyEnergyBar = document.getElementById("dummyEnergyBar");
    const dummyEnergyPercentage = dummy.energy / 100;
    dummyEnergyBar.style.width = `${dummyEnergyPercentage * 100}%`;
  }
 
+ function updateXPBar() {
+   const playerXP = document.getElementById('playerXP');
+   const playerLevel = document.getElementById('playerLevel');
+   const playerXPBar = document.getElementById('playerXPBar');
+   const xpNeeded = document.getElementById('xpNeeded');
+
+   // Assuming player object has level and xp properties
+   const currentXP = player.xp;
+   const requiredXP = player.level * 100; // You can modify the XP scaling
+   const xpProgress = Math.min((currentXP / requiredXP) * 100, 100);
+
+   // Update XP display
+   playerXP.textContent = currentXP;
+   xpNeeded.textContent = requiredXP;
+
+   // Update XP bar
+   playerXPBar.style.width = xpProgress + '%';
+
+   // Level up check (example)
+   if (currentXP >= requiredXP) {
+     player.level++;
+     player.xp = 0; // Reset XP after leveling up
+     updateXPBar(); // Recalculate the XP bar after leveling up
+   }
+ }
+
+ // Function to log actions in the log section
  function logAction(message, type = "default") {
    const logElement = document.getElementById("log");
    if (!logElement) {
@@ -88,29 +132,64 @@ let player = {
    updateBars();
  }
 
+ // Function to gain XP and level up the player
  function gainXP(amount) {
-     player.xp += amount;
-     logAction(`Gained ${amount} XP.`);
-     if (player.xp >= player.level * 100) {
-         player.xp -= player.level * 100;
-         player.level++;
-         player.health += 20;
-         player.energy += 20;
-         logAction(`Leveled up! Now level ${player.level}. Max health and energy increased.`);
-     }
+   player.xp += amount;
+   logAction(`Gained ${amount} XP.`);
+
+   while (player.xp >= player.level * 100) {
+     player.xp -= player.level * 100;
+     player.level++;
+
+     const healthGain = Math.floor(20 * Math.pow(1.1, player.level));
+     const energyGain = Math.floor(15 * Math.pow(1.08, player.level));
+
+     player.maxHealth += healthGain;
+     player.maxEnergy += energyGain;
+
+     player.health = player.maxHealth;
+     player.energy = player.maxEnergy;
+
+     logAction(`Leveled up! Now level ${player.level}.`);
+     logAction(`+${healthGain} Max HP, +${energyGain} Max Energy.`);
+   }
+
+   updateStats(); // Update UI
  }
 
- const cooldowns = {
-   unseenHand: 0,
-   divineProtection: 0,
-   lordOfTheRealm: 0
- };
-
- function reduceCooldowns() {
-   for (let key in cooldowns) {
-     if (cooldowns[key] > 0) cooldowns[key]--;
+ // Function to toggle between light and dark themes
+ function toggleTheme() {
+   // Check if the body has the 'dark-theme' class
+   if (document.body.classList.contains("dark-theme")) {
+     // Remove dark theme and apply light theme
+     document.body.classList.remove("dark-theme");
+     localStorage.setItem("theme", "light"); // Save the preference
+   } else {
+     // Apply dark theme and remove light theme
+     document.body.classList.add("dark-theme");
+     localStorage.setItem("theme", "dark"); // Save the preference
    }
  }
+
+ // Function to apply the saved theme on page load
+ function applySavedTheme() {
+   const savedTheme = localStorage.getItem("theme"); // Retrieve the saved theme
+
+   if (savedTheme === "dark") {
+     document.body.classList.add("dark-theme");
+   } else {
+     document.body.classList.remove("dark-theme");
+   }
+ }
+
+ // Apply the saved theme when the page loads
+ window.onload = applySavedTheme;
+
+   // Set up the theme switch toggle
+   const themeSwitch = document.getElementById("themeSwitch");
+   if (themeSwitch) {
+     themeSwitch.addEventListener("change", toggleTheme);
+   };
 
  function canUseAbility() {
    if (gameEnded) {
@@ -127,13 +206,6 @@ let player = {
      logAction("Wait for your turn!", "info");
      return;
    }
-
-   if (cooldowns.unseenHand > 0) {
-     logAction("Unseen Hand is on cooldown!", "info");
-     return;
-   }
-
-   if (player.energy >= 0) {
      let baseDamage = 15;
      let finalDamage = baseDamage;
 
@@ -151,14 +223,10 @@ let player = {
      console.log("Ability name passed:", "unseenHand");
 
      logAction(`You strike with Unseen Hand, dealing ${finalDamage} damage and stealing ${energyStolen} energy!`, "attack");
-     cooldowns.unseenHand = 0;
      checkBattleEnd();
      endTurn();
+     updateBars();
    }
-
-   updateBars();
- }
-
 
  function useDivineProtection() {
    if (!canUseAbility()) return;
@@ -168,7 +236,7 @@ let player = {
    return;
  }
 
-   if (cooldowns.divineProtection > 0) {
+   if (player.divineProtectionCooldown > 0) {
      logAction("Divine Protection is on cooldown!", "info");
      return;
    }
@@ -177,7 +245,7 @@ let player = {
          player.energy -= 30;
          player.divineBarrierTurns = 3;
          logAction("Divine Protection activated. Immune to damage for 3 turns.", "heal");
-         cooldowns.divineProtection = 4;
+         player.divineProtectionCooldown = 4;
          updateStats();
          endTurn();
      } else {
@@ -194,7 +262,7 @@ let player = {
    return;
  }
 
-   if (cooldowns.lordOfTheRealm > 0) {
+   if (player.lordOfTheRealmCooldown > 0) {
      logAction("Lord Of The Realm is on cooldown!", "info");
      return;
    }
@@ -204,7 +272,7 @@ let player = {
          dummy.health -= 30;
          player.realmTurns = 3;
          logAction("Lord of the Realm used. Dummy takes 30 damage.", "attack");
-         cooldowns.lordOfTheRealm = 4;
+         player.lordOfTheRealmCooldown = 4;
          activateDivineOne();
          updateStats();
          checkBattleEnd();
@@ -217,7 +285,7 @@ let player = {
 
  function activateDivineOne() {
      player.divineOneBarrier = 3;
-     logAction("Passive 'Divine One' activated. Barrier created for 3 turns.", "heal");
+     logAction("Passive 'Divine One' activated. Player will be healed for 3 turns.", "heal");
  }
 
  function generateEnergy() {
@@ -527,193 +595,181 @@ let player = {
      });
    };
 
-   //updateInventoryUI(); // Update the inventory UI after adding items
-
- function checkBattleEnd() {
-   // Check if the player is defeated
-   console.log("checkBattleEnd called");
-   if (player.health <= 0) {
-     logAction("You were defeated!");  // Log defeat message
-     gainXP(20);  // Award XP for losing, you can adjust this value
-     endBattleScreen();  // End the battle screen
-     return; // Ensure no further checks are made once the battle is over
-   }
-
-   // Check if the dummy is defeated
-   else if (dummy.health <= 0) {
-     logAction("You defeated the training dummy!");  // Log victory message
-     gainXP(50);  // Award XP for defeating the dummy
-     dropLoot();  // Drop loot (define this function later)
-     endBattleScreen();  // End the battle screen
-     return; // Ensure no further checks are made once the battle is over
-   }
-
-   // Update health and energy bars
-   updateBars();
- }
-
- // Function to handle the end of the battle and display post-battle options
- function endBattleScreen() {
-   // Show the post-battle UI
-   document.getElementById("postBattle").style.display = "block"; // Display the victory screen
-   document.getElementById("inventoryScreen").style.display = "none"; // Hide inventory screen if it's not being shown
-   document.getElementById("mainMenu").style.display = "none"; // Hide the main menu
-   document.getElementById("startNewBattleButton").style.display = "block"; // Show the "Start New Battle" button
-   document.getElementById("inventoryButton").style.display = "block"; // Show the "Inventory" button
-
-   // Log victory message
-   logAction("You win! Preparing next round...");
-
-   // Gain XP after victory
-   gainXP(50);
-
-   // Mark the game as finished
-   gameEnded = true;
-
-   // Update stats and bars
-   updateStats();
-   updateBars();
-
-   // Make sure no turns are continuing
-   playerTurn = false;  // End player's turn to prevent infinite loop
- }
-
- function resetBattle(victory) {
-   if (!gameEnded) {
-     // Handle XP gain based on victory or defeat
-     if (victory) {
-       gainXP(50); // Only gain XP once per victory
-       logAction("You win! Preparing next round...");
-     } else {
-       logAction("You were defeated! But you still gained some XP.");
-       gainXP(20); // Gaining some XP if defeated
-     }
-
-     // Mark the game as ended
+   function resetBattle(isVictory) {
      gameEnded = true;
-   }
+     // Reset player and dummy stats (based on level)
+     player.health = 100 + (player.level - 1) * 20;
+     player.energy = 100 + (player.level - 1) * 20;
+     dummy.health = 100;
+     dummy.energy = 50;
 
-   // Reset player and dummy stats (based on level)
-   player.health = 100 + (player.level - 1) * 20;
-   player.energy = 100 + (player.level - 1) * 20;
-   dummy.health = 100
-   dummy.energy = 50;
-   player.divineBarrierTurns = 0;
-   player.realmTurns = 0;
-   player.divineOneBarrier = 0;
+     // Reset ability cooldowns
+     player.divineProtectionCooldown = 0; // Reset Divine Protection cooldown
+     player.lordOfTheRealmCooldown = 0;   // Reset Lord of the Realm cooldown
+     player.divineBarrierTurns = 0;
+     player.realmTurns = 0;
+     player.divineOneBarrier = 0;
 
-   // Reset turn number
-   turnNumber = 1;
-   document.getElementById("turnCounter").textContent = "Turn: " + turnNumber;
+     // Reset turn number
+     turnNumber = 1;
+     document.getElementById("turnCounter").textContent = "Turn: " + turnNumber;
 
-   // Update the UI with the latest stats and bars
-   updateStats();
-   updateBars();
-
-   // Reset UI for next round
-   const postBattleScreen = document.getElementById("postBattle");
-   const inventoryScreen = document.getElementById("inventoryScreen");
-   const startNewBattleButton = document.getElementById("startNewBattleButton");
-   const inventoryButton = document.getElementById("inventoryButton");
-
-   // Check if UI elements are valid before manipulating
-   if (postBattleScreen && inventoryScreen && startNewBattleButton && inventoryButton) {
-     postBattleScreen.style.display = "block";  // Show the post-battle screen
-     inventoryScreen.style.display = "none";   // Ensure inventory screen is hidden
-     startNewBattleButton.style.display = "block"; // Show the "Start New Battle" button
-     inventoryButton.style.display = "block"; // Show the "Inventory" button
-   } else {
-     console.error("One or more elements are missing from the DOM!");
-   }
-
-   // Reset the turn system (next round should start with the player's turn)
-   playerTurn = true; // Player gets the first turn in the next round
- }
-
-
- function startNewBattle() {
-   // Reset game state
-   gameEnded = false;
-
-   // Reset player and dummy stats
-   player.health = 100 + (player.level - 1) * 20;
-   player.energy = 100 + (player.level - 1) * 20;
-   dummy.health = 100;
-   dummy.energy = 0;
-
-   // Reset turn
-   playerTurn = true;
-   turnNumber = 1;
-   document.getElementById("turnCounter").textContent = "Turn: " + turnNumber;
-
-   // Update stats and UI
-   updateStats();
-   updateBars();
-
-   // Hide post-battle screen and inventory if they're open
-   const postBattleScreen = document.getElementById("postBattle");
-   const inventoryScreen = document.getElementById("inventoryScreen");
-
-   if (postBattleScreen) postBattleScreen.style.display = "none";
-   if (inventoryScreen) inventoryScreen.style.display = "none";
-
-   // Log the beginning of a new battle
-   logAction("A new round has begun.");
- }
-
-
- function endTurn() {
-   playerTurn = false;
-   turnNumber++;
-   document.getElementById("turnCounter").textContent = "Turn: " + turnNumber;
-
-   // Reduce cooldowns
-   reduceCooldowns();
-
-   // Check for game-ending conditions
-   if (dummy.health <= 0) {
-     resetBattle(true);
-     return;
-   }
-
-   if (player.health <= 0) {
-     resetBattle(false);
-     return;
-   }
-
-   // Handle energy generation
-   if (player.isGeneratingEnergy) {
-     player.energy += 10;
-     player.isGeneratingEnergy = false;
-     logAction("Energy generated! +10 energy.");
-   }
-
-   // Short delay for enemy turn
-   setTimeout(() => {
-     enemyTurn(); // Call enemy's turn after a short delay
+     // Update stats and bars
      updateStats();
      updateBars();
-     playerTurn = true; // Allow the player to act again
-   }, 500);
- }
 
- function enemyTurn() {
-   dummy.energy += 10;
+     // Reset UI for next round
+     const postBattleScreen = document.getElementById("postBattle");
+     const inventoryScreen = document.getElementById("inventoryScreen");
+     const startNewBattleButton = document.getElementById("startNewBattleButton");
+     const inventoryButton = document.getElementById("inventoryButton");
 
-   if (dummy.energy >= 20) {
-     dummy.energy -= 20;
-
-     if (player.divineBarrierTurns > 0) {
-       logAction("Dummy attacked, but Divine Protection blocked the damage!");
-       player.divineBarrierTurns--;
+     // Check if UI elements are valid before manipulating
+     if (postBattleScreen && inventoryScreen && startNewBattleButton && inventoryButton) {
+       postBattleScreen.style.display = "block";  // Show the post-battle screen
+       inventoryScreen.style.display = "none";   // Ensure inventory screen is hidden
+       startNewBattleButton.style.display = "block"; // Show the "Start New Battle" button
+       inventoryButton.style.display = "block"; // Show the "Inventory" button
      } else {
-       player.health -= 10;
-       logAction("Dummy attacks! You take 10 damage.");
+       console.error("One or more elements are missing from the DOM!");
      }
-   } else {
-     logAction("Dummy is charging energy...");
+
+     // Reset the turn system (next round should start with the player's turn)
+     playerTurn = true; // Player gets the first turn in the next round
+
+     // If the battle is over and there's a victory, you can handle it here
+     if (isVictory) {
+       logAction("You win! Preparing next round...");
+     } else {
+       logAction("You were defeated! Try again!");
+     }
    }
 
-   checkBattleEnd(); // Check if the battle ended after enemy turn
-   updateBars();
- }
+   // Example of calling this function after a battle ends
+   function checkBattleEnd() {
+     if (player.health <= 0) {
+       logAction("You were defeated!");  // Log defeat message
+       gainXP(20);  // Award XP for losing
+       resetBattle(false);  // Reset battle on defeat
+       return true; // Indicate that battle ended
+     }
+
+     if (dummy.health <= 0) {
+       logAction("You defeated the training dummy!");
+       gainXP(50);
+       dropLoot();
+       resetBattle(true);  // Reset battle on victory
+       return true; // Indicate that battle ended
+     }
+
+     return false; // No one died, battle continues
+   }
+
+   // Function to start a new battle and reset everything
+   // Start New Battle
+   function startNewBattle() {
+     // Reset game state
+     gameEnded = false; // Reset game status for new battle
+
+     // Reset player and dummy stats
+     player.health = 100 + (player.level - 1) * 20;
+     player.energy = 100 + (player.level - 1) * 20;
+     dummy.health = 100;
+     dummy.energy = 50;  // Give dummy some energy for next round
+
+     // Reset cooldowns
+     player.divineProtectionCooldown = 0;
+     player.lordOfTheRealmCooldown = 0;
+     player.divineBarrierTurns = 0;
+     player.realmTurns = 0;
+     player.divineOneBarrier = 0;
+
+     // Reset turn system
+     playerTurn = true;
+     turnNumber = 1;
+     document.getElementById("turnCounter").textContent = "Turn: " + turnNumber;
+
+     // Update stats and UI
+     updateStats();
+     updateBars();
+
+     // Hide post-battle screen and inventory if they are visible
+     const postBattleScreen = document.getElementById("postBattle");
+     const inventoryScreen = document.getElementById("inventoryScreen");
+
+     if (postBattleScreen) postBattleScreen.style.display = "none";
+     if (inventoryScreen) inventoryScreen.style.display = "none";
+
+     // Log new round start
+     logAction("A new round has begun.");
+   }
+
+   // End Turn
+   function endTurn() {
+     playerTurn = false;
+
+     // Check if the game is over
+     if (dummy.health <= 0) {
+       resetBattle(true); // Victory
+       return;
+     }
+
+     if (player.health <= 0) {
+       resetBattle(false); // Defeat
+       return;
+     }
+
+     // Handle energy generation
+     if (player.isGeneratingEnergy) {
+       player.energy += 10;
+       player.isGeneratingEnergy = false;
+       logAction("Energy generated! +10 energy.");
+     }
+
+     // Handle divine one barrier healing
+     if (player.divineOneBarrier > 0) {
+       player.health += 10;
+       logAction("Player gained +10 health.", "heal");
+     }
+
+     // 🛡️ Only run dummy's turn if battle hasn't ended
+     if (!gameEnded) {
+       setTimeout(() => {
+         enemyTurn();
+         updateStats();
+         updateBars();
+         playerTurn = true;
+       }, 1000);
+     }
+   }
+
+function enemyTurn() {
+  dummy.energy += 10;
+
+  if (dummy.energy >= 20) {
+    dummy.energy -= 20;
+
+    if (player.divineBarrierTurns > 0) {
+      logAction("Dummy attacked, but Divine Protection blocked the damage!");
+    } else {
+      player.health -= 10;
+      logAction("Dummy attacks! You take 10 damage.");
+    }
+  } else {
+    logAction("Dummy is charging energy...");
+  }
+
+  // Decrement cooldowns and durations AFTER the full turn
+  player.divineProtectionCooldown = Math.max(0, player.divineProtectionCooldown - 1);
+  player.lordOfTheRealmCooldown = Math.max(0, player.lordOfTheRealmCooldown - 1);
+  player.divineBarrierTurns = Math.max(0, player.divineBarrierTurns - 1);
+  player.realmTurns = Math.max(0, player.realmTurns - 1);
+  player.divineOneBarrier = Math.max(0, player.divineOneBarrier - 1);
+
+  // Now increment turn counter at the end of the full round
+  turnNumber++;
+  document.getElementById("turnCounter").textContent = "Turn: " + turnNumber;
+
+  checkBattleEnd();
+  updateBars();
+}

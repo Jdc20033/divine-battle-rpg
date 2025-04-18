@@ -1,7 +1,15 @@
+/* Default (light) theme */
 body {
   font-family: Arial, sans-serif;
   text-align: center;
   background-color: #e0f0ff;
+  color: #000;
+}
+
+/* Dark theme styles */
+body.dark-theme {
+  background-color: #121212;
+  color: #eee;
 }
 
 #gameContainer {
@@ -14,12 +22,22 @@ body {
   background-color: white;
 }
 
+body.dark-theme #gameContainer {
+  background-color: #1e1e1e;
+  border-color: #666;
+}
+
 .character-container {
   border: 1px solid #ccc;
   padding: 10px;
   margin: 15px auto;
   width: 300px;
   background-color: #f9f9f9;
+}
+
+body.dark-theme .character-container {
+  background-color: #2b2b2b;
+  border-color: #666;
 }
 
 .bar-wrapper {
@@ -39,7 +57,10 @@ body {
   width: 100%;
 }
 
-/* Health Bar with Texture */
+body.dark-theme .bar-container {
+  background-color: #444;
+}
+
 .bar {
   border-radius: 5px;
   background: linear-gradient(to right, #ff0000, #ff9900);
@@ -48,12 +69,12 @@ body {
 }
 
 .health-bar {
-  background-color: #e74c3c; /* red */
+  background-color: #e74c3c;
   width: 100%;
 }
 
 .energy-bar {
-  background-color: #3498db; /* blue */
+  background-color: #3498db;
   width: 100%;
 }
 
@@ -68,7 +89,49 @@ body {
   text-align: left;
 }
 
-/* Action Buttons */
+body.dark-theme #log,
+body.dark-theme #battleLog {
+  background-color: #222;
+  border-color: #555;
+  color: #eee;
+}
+
+#playerLevel {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #333;
+}
+
+body.dark-theme #playerLevel {
+  color: #ccc;
+}
+
+.xp-wrapper {
+  margin: 10px 0;
+}
+
+.xp-bar-container {
+  background-color: #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  height: 20px;
+  width: 100%;
+  box-shadow: inset 0 0 5px #aaa;
+  margin-bottom: 5px;
+}
+
+body.dark-theme .xp-bar-container {
+  background-color: #444;
+  box-shadow: inset 0 0 5px #222;
+}
+
+.xp-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(to right, #5fafff, #0088ff);
+  transition: width 0.3s ease-in-out;
+}
+
 button {
   background-color: #5a5a5a;
   border-radius: 10px;
@@ -85,38 +148,52 @@ button:hover {
 }
 
 #inventoryScreen {
-    padding: 20px;
-    background-color: #fefefe;
-    border: 2px solid #ccc;
-    margin-top: 20px;
-    text-align: left;
+  padding: 20px;
+  background-color: #fefefe;
+  border: 2px solid #ccc;
+  margin-top: 20px;
+  text-align: left;
+}
+
+body.dark-theme #inventoryScreen {
+  background-color: #2a2a2a;
+  border-color: #666;
 }
 
 #characterPortrait {
-    width: 100px;
-    height: 100px;
-    background-color: #ddd;
-    border: 1px solid #aaa;
-    margin-bottom: 20px;
-    text-align: center;
-    line-height: 100px;
+  width: 100px;
+  height: 100px;
+  background-color: #ddd;
+  border: 1px solid #aaa;
+  margin-bottom: 20px;
+  text-align: center;
+  line-height: 100px;
+}
+
+body.dark-theme #characterPortrait {
+  background-color: #444;
+  border-color: #888;
 }
 
 #equipmentSlots .equipment-slot {
-    margin: 5px 0;
-    padding: 5px;
-    border: 1px solid #aaa;
-    background-color: #f0f0f0;
+  margin: 5px 0;
+  padding: 5px;
+  border: 1px solid #aaa;
+  background-color: #f0f0f0;
+}
+
+body.dark-theme #equipmentSlots .equipment-slot {
+  background-color: #3a3a3a;
+  border-color: #888;
 }
 
 .inventory-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-top: 10px;
 }
 
-/* Item Icons */
 .inventory-slot {
   width: 60px;
   height: 60px;
@@ -126,16 +203,14 @@ button:hover {
   margin: 5px;
 }
 
-/*.inventory-slot img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 5px;
-}*/
-
 .inventory-slot.empty {
   background-color: #f0f0f0;
   color: #888;
+}
+
+body.dark-theme .inventory-slot.empty {
+  background-color: #444;
+  color: #aaa;
 }
 
 #log {
@@ -165,7 +240,6 @@ button:hover {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Color themes */
 .log-entry.attack { border-left-color: #c62828; color: #ef9a9a; }
 .log-entry.heal   { border-left-color: #2e7d32; color: #a5d6a7; }
 .log-entry.loot   { border-left-color: #f9a825; color: #fff59d; }
@@ -183,22 +257,25 @@ button:hover {
   cursor: grab;
 }
 
+body.dark-theme .slot {
+  background-color: #333;
+  border-color: #666;
+}
+
 .slot.drag-over {
   background-color: #cceeff;
   border-color: #00aaff;
 }
 
-/* Highlight the equipment slot when dragging an item over it */
 .drag-over {
   border: 2px dashed #4CAF50;
   background-color: rgba(0, 128, 0, 0.1);
-  outline: 2px solid #32CD32; /* Green outline for the drag-over effect */
-  outline-offset: 2px; /* Optional: Adds some space between the element and the outline */
+  outline: 2px solid #32CD32;
+  outline-offset: 2px;
 }
 
-/* Optional: Add hover effect on equipment slots */
 .equipment-slot:hover {
-  border: 2px solid #32CD32; /* Green border on hover */
+  border: 2px solid #32CD32;
   cursor: pointer;
 }
 
@@ -207,7 +284,6 @@ button:hover {
   background-color: rgba(0, 0, 0, 0.8);
 }
 
-/* Equipment Slot Styling */
 .equipment-slot {
   padding: 10px;
   background-color: rgba(0, 0, 0, 0.7);
@@ -215,4 +291,108 @@ button:hover {
   margin: 10px;
   font-size: 1.2em;
   color: #fff;
+}
+
+body.dark-theme .equipment-slot {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #eee;
+}
+
+/* Theme switch container */
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide the default checkbox */
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Slider styling */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+/* Circle inside the slider */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  border-radius: 50%;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+}
+
+/* When checkbox is checked (dark mode) */
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+/* Move the circle to the right when checked */
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* Dark mode slider background when checked */
+body.dark-theme .slider {
+  background-color: #444;
+}
+
+/* Dark theme */
+body.dark-theme {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+body.dark-theme .character-container {
+  background-color: #333;
+  border: 1px solid #444;
+}
+
+body.dark-theme .bar {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+body.dark-theme #log {
+  background-color: #222;
+  color: #ccc;
+}
+
+body.dark-theme button {
+  background-color: #444;
+}
+
+body.dark-theme button:hover {
+  background-color: #ff6600;
+}
+
+body.dark-theme #inventoryScreen {
+  background-color: #333;
+  border-color: #444;
+}
+
+body.dark-theme .equipment-slot {
+  background-color: #555;
+  border-color: #666;
+}
+
+body.dark-theme .inventory-slot {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #666;
 }
