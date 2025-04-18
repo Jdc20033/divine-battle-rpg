@@ -1,3 +1,9 @@
+window.addEventListener("load", () => {
+  if (localStorage.getItem("divineBattleSave")) {
+    loadGame();
+  }
+});
+
 let player = {
   health: 100,
   energy: 100,
@@ -455,7 +461,7 @@ function createItem(name, description, type, effect) {
 //const sword = createItem("Sword", "A sharp blade for combat.");
 //addItemToInventory(sword);
 
-const sword = createItem("Sword", "Boosts your power!", "Weapon", {
+const sword = createItem("The Seeing Hand", "Boosts your power!", "Weapon", {
     onAbilityUse: (baseDamage, abilityName) => {
       console.log(`onAbilityUse called for ability: ${abilityName}`);
       if (abilityName === "unseenHand") {
@@ -466,9 +472,9 @@ const sword = createItem("Sword", "Boosts your power!", "Weapon", {
       return baseDamage;
     }
   });
-  addItemToInventory(sword);
-  updateInventoryUI();
-  updateEquipmentUI();
+  // addItemToInventory(sword);
+// updateInventoryUI();
+  // updateEquipmentUI();
 
 // Function to open the inventory
 function openInventory() {
@@ -503,9 +509,7 @@ const lootTable = [
 
 // Drop loot function
 function dropLoot() {
-  console.log("dropLoot called");
   const loot = [];
-  console.log("Dropping loot...");
 
   // Drop items based on random probabilities
   if (Math.random() < 0.9) loot.push(createItem(lootTable[0].name, lootTable[0].description, lootTable[0].type)); // Coins
@@ -513,8 +517,6 @@ function dropLoot() {
   if (Math.random() < 0.9) loot.push(createItem(lootTable[2].name, lootTable[2].description, lootTable[2].type)); // Sword
   if (Math.random() < 0.9) loot.push(createItem(lootTable[3].name, lootTable[3].description, lootTable[3].type)); // Helmet
   if (Math.random() < 0.9) loot.push(createItem(lootTable[4].name, lootTable[4].description, lootTable[4].type)); // Chestpiece
-
-  console.log("Loot generated:", loot);
 
   // Process each item dropped
   loot.forEach(item => {
@@ -533,15 +535,15 @@ function checkBattleEnd() {
   // Check if the player is defeated
   console.log("checkBattleEnd called");
   if (player.health <= 0) {
-    logAction("You were defeated!");  // Log defeat message
-    gainXP(20);  // Award XP for losing, you can adjust this value
+    logAction("You were defeated!", "attack");  // Log defeat message
+    gainXP(10);  // Award XP for losing, you can adjust this value
     endBattleScreen();  // End the battle screen
     return; // Ensure no further checks are made once the battle is over
   }
 
   // Check if the dummy is defeated
   else if (dummy.health <= 0) {
-    logAction("You defeated the training dummy!");  // Log victory message
+    logAction("You defeated the training dummy!", "info");  // Log victory message
     gainXP(50);  // Award XP for defeating the dummy
     dropLoot();  // Drop loot (define this function later)
     endBattleScreen();  // End the battle screen
@@ -583,10 +585,10 @@ function resetBattle(victory) {
     // Handle XP gain based on victory or defeat
     if (victory) {
       gainXP(50); // Only gain XP once per victory
-      logAction("You win! Preparing next round...");
+      logAction("You won the battle!", "info");
     } else {
-      logAction("You were defeated! But you still gained some XP.");
-      gainXP(20); // Gaining some XP if defeated
+      logAction("You were defeated! But you still gained some XP.", "attack");
+      gainXP(10); // Gaining some XP if defeated
     }
 
     // Mark the game as ended
@@ -717,3 +719,35 @@ function enemyTurn() {
   checkBattleEnd(); // Check if the battle ended after enemy turn
   updateBars();
 }
+
+window.saveGame = function () {
+  const gameData = {
+    player,
+    inventory,
+    equipment,
+    dummy
+  };
+  localStorage.setItem("divineBattleSave", JSON.stringify(gameData));
+  logAction("Game saved!", "info");
+};
+
+window.loadGame = function () {
+  const savedData = localStorage.getItem("divineBattleSave");
+  if (savedData) {
+    const gameData = JSON.parse(savedData);
+    player = gameData.player;
+    inventory = gameData.inventory;
+    equipment = gameData.equipment;
+    dummy = gameData.dummy;
+    updateInventoryUI();
+    updateEquipmentUI();
+    logAction("Game loaded!", "info");
+  } else {
+    logAction("No save data found.", "error");
+  }
+};
+
+window.resetGame = function () {
+  localStorage.removeItem("divineBattleSave");
+  logAction("Save data deleted.", "attack");
+};
