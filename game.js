@@ -773,3 +773,107 @@ function enemyTurn() {
   checkBattleEnd();
   updateBars();
 }
+
+// SAVE FUNCTIONS UNSTABLE BELOW
+
+// function saveGame() {
+//     if (!gameEnded && currentScreen !== "mainMenu") {
+//       logAction("You can only save from the main menu.", "info");
+//       return;
+//     }
+//
+//   // 2. Build the save object
+//   const saveData = {
+//     player: { ...player },
+//     inventory,
+//     equipment // <-- use it here AFTER defining it above
+//   };
+//
+//   // 3. Store it
+//   localStorage.setItem("rpgSaveData", JSON.stringify(saveData));
+//   logAction("Game saved successfully!", "info");
+// }
+//
+// function loadGame() {
+//   const saved = localStorage.getItem("rpgSaveData");
+//   if (!saved) {
+//     logAction("No saved data found.", "error");
+//     return;
+//   }
+//
+//   const saveData = JSON.parse(saved);
+//
+//   // Restore data
+//   Object.assign(player, saveData.player);
+//   inventory = saveData.inventory || Array(10).fill(null);
+//   equipment = saveData.equipment || {
+//     helmet: null,
+//     chest: null,
+//     arms: null,
+//     legs: null,
+//     weapon: null
+//   };
+//
+//   currentScreen = "mainMenu";
+//
+//   // Update UI
+//   updateStats();
+//   updateInventoryUI();
+//   updateEquipmentUI();
+//
+//   gameEnded = false;
+//   playerTurn = true;
+//   logAction("Game loaded successfully!", "info");
+// }
+//
+// function openDeleteConfirm() {
+//   document.getElementById("deleteConfirmPopup").style.display = "flex";
+// }
+//
+// function closeDeleteConfirm() {
+//   document.getElementById("deleteConfirmPopup").style.display = "none";
+// }
+//
+// function deleteSave() {
+//   // Clear localStorage
+//   localStorage.removeItem("rpgSaveData");
+//
+//   // Reset player state
+//   player = {
+//     health: 100,
+//     maxHealth: 100,
+//     energy: 100,
+//     maxEnergy: 100,
+//     level: 1,
+//     xp: 0,
+//     isGeneratingEnergy: false,
+//     divineProtectionCooldown: 0,
+//     lordOfTheRealmCooldown: 0,
+//     divineBarrierTurns: 0,
+//     realmTurns: 0,
+//     divineOneBarrier: 0
+//   };
+//
+//   // Reset inventory & equipment
+//   inventory = Array(10).fill(null);
+//   equipment = {
+//     helmet: null,
+//     chest: null,
+//     arms: null,
+//     legs: null,
+//     weapon: null
+//   };
+//
+//   // Reset UI & flags
+//   playerTurn = true;
+//   gameEnded = false;
+//   turnNumber = 1;
+//
+//   updateStats();
+//   updateInventoryUI();
+//   updateEquipmentUI();
+//   document.getElementById("turnCounter").textContent = "Turn: 1";
+//
+//   closeDeleteConfirm();
+//   logAction("Save deleted. Game reset to default.", "info");
+// }

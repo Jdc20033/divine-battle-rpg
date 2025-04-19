@@ -107,11 +107,25 @@
     </div>
 
     <div id="mainMenu" style="display: block;">
-      <button onclick="startNewBattle()">Start New Battle</button>
-      <button onclick="openInventory()">Check Inventory</button>
-    </div>
+  <!--  <button onclick="startNewBattle()">Start New Battle</button> -->
+        <button onclick="closeInventory()">Close Inventory</button>
+  <!--  <button onclick="saveGame()">Save Game</button>
+        <button onclick="loadGame()">Load Game</button>
+        <button onclick="openDeleteConfirm()">Delete Save</button> -->
 
-    <button onclick="closeInventory()">Back to Main Menu</button>
+<!-- Theme Toggle Switch -->
+
+      </div>
+    </div>
+  <!--  <button id="backToMenuButton" onclick="closeInventory()" style="display: none;">Back to Main Menu</button> -->
+
+  <!--   <div id="deleteConfirmPopup" style="display: none;" class="modal-overlay">
+  <div class="modal-box">
+    <p>Are you sure you want to delete your save? This will erase all progress.</p>
+    <button onclick="deleteSave()">Yes, Delete</button>
+    <button onclick="closeDeleteConfirm()">Cancel</button> -->
+  </div>
+</div>
   </div>
 
   <script src="game.js"></script>
